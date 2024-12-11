@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 @Data
 @Entity
+@IdClass(UserId::class)
 data class User(
     @Id
     @NonNull
