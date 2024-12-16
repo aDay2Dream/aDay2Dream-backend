@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.*
 class AccountController(@Autowired private val accountService: AccountService) {
 
     @PostMapping
-    fun createAccount(@RequestBody account: AccountDto): ResponseEntity<AccountDto> {
-        val createdUser = accountService.createAccount(account)
+    fun createAccount(@RequestBody account: AccountDto,
+                      @RequestParam("password") password : String): ResponseEntity<AccountDto> {
+        val createdUser = accountService.createAccount(account, password)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser)
     }
 
@@ -35,9 +36,10 @@ class AccountController(@Autowired private val accountService: AccountService) {
     @PutMapping("/{id}")
     fun updateAccount(
         @PathVariable("id") accountId: Long,
-        @RequestBody updatedAccount: AccountDto
+        @RequestBody updatedAccount: AccountDto,
+        @RequestParam("password") password: String
     ): ResponseEntity<AccountDto> {
-        val user = accountService.updateAccount(accountId, updatedAccount)
+        val user = accountService.updateAccount(accountId, updatedAccount, password)
         return ResponseEntity.ok(user)
     }
 
@@ -46,5 +48,14 @@ class AccountController(@Autowired private val accountService: AccountService) {
     fun deleteAccount(@PathVariable("id") accountId: Long): ResponseEntity<Void> {
         accountService.deleteAccount(accountId)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/verify")
+    fun verifyPassword(
+        @RequestParam("username") username: String,
+        @RequestParam("password") password: String
+    ): ResponseEntity<Boolean> {
+        val isValid = accountService.verifyPassword(username, password)
+        return ResponseEntity.ok(isValid)
     }
 }

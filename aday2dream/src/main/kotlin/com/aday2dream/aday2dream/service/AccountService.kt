@@ -1,19 +1,22 @@
 package com.aday2dream.aday2dream.service
+
+import com.aday2dream.aday2dream.config.AppConfig
 import com.aday2dream.aday2dream.dto.AccountDto
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class AccountService(@Autowired
-                     private val accountRepository: AccountRepository) {
+                     private val accountRepository: AccountRepository,
+                     private val passwordEncoder: PasswordEncoder) {
 
     private fun mapToDto(account: Account): AccountDto {
         return AccountDto(
             accountId = account.accountId,
             username = account.username,
-            password = account.password,
             email = account.email,
             firstName = account.firstName,
             lastName = account.lastName,
@@ -23,11 +26,11 @@ class AccountService(@Autowired
         )
     }
 
-    private fun mapToEntity(userDto: AccountDto): Account {
+    private fun mapToEntity(userDto: AccountDto, hashedPassword: String): Account {
         return Account(
             accountId = userDto.accountId,
             username = userDto.username,
-            password = userDto.password,
+            password = hashedPassword,
             email = userDto.email,
             firstName = userDto.firstName,
             lastName = userDto.lastName,
@@ -37,8 +40,10 @@ class AccountService(@Autowired
         )
     }
 
-    fun createAccount(account: AccountDto): AccountDto {
-        val account = mapToEntity(account)
+    fun createAccount(account: AccountDto, rawPassword: String): AccountDto {
+        val hashedPassword = passwordEncoder.encode(rawPassword)
+
+        val account = mapToEntity(account, hashedPassword)
         val savedAccount = accountRepository.save(account)
         return mapToDto(savedAccount)
     }
@@ -55,11 +60,13 @@ class AccountService(@Autowired
     }
 
 
-    fun updateAccount(accountId: Long, accountDto: AccountDto): AccountDto {
+    fun updateAccount(accountId: Long, accountDto: AccountDto, rawPassword: String?): AccountDto {
+
         val existingAccount = accountRepository.findById(accountId).orElseThrow { RuntimeException("User not found") }
         val updatedAccount = existingAccount.copy(
             username = accountDto.username,
             email = accountDto.email,
+            password = rawPassword?.let { passwordEncoder.encode(it) } ?: existingAccount.password,
             firstName = accountDto.firstName,
             lastName = accountDto.lastName,
             profilePicture = accountDto.profilePicture,
@@ -77,6 +84,13 @@ class AccountService(@Autowired
         }
         accountRepository.deleteById(accountId)
     }
+
+    fun verifyPassword(username: String, rawPassword: String): Boolean {
+        val account = accountRepository.findByUsername(username)
+            ?: throw RuntimeException("User not found")
+        return passwordEncoder.matches(rawPassword, account.password)
+    }
+
 }
 
 
