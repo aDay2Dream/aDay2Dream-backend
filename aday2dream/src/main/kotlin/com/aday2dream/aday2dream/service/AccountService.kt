@@ -1,17 +1,21 @@
 package com.aday2dream.aday2dream.service
 
-import com.aday2dream.aday2dream.config.AppConfig
 import com.aday2dream.aday2dream.dto.AccountDto
+import com.aday2dream.aday2dream.dto.AccountLoginDto
+
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class AccountService(@Autowired
                      private val accountRepository: AccountRepository,
-                     private val passwordEncoder: PasswordEncoder) {
+                     private val passwordEncoder: PasswordEncoder,
+                     private val authenticationManager: AuthenticationManager
+) {
 
     private fun mapToDto(account: Account): AccountDto {
         return AccountDto(
@@ -90,6 +94,40 @@ class AccountService(@Autowired
             ?: throw RuntimeException("User not found")
         return passwordEncoder.matches(rawPassword, account.password)
     }
+
+    fun register(accountRegistrationDTO: AccountDto, rawPassword: String): Account {
+
+        if (accountRepository.existsByUsername(accountRegistrationDTO.username)) {
+            throw IllegalArgumentException("Username already exists")
+        }
+        if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
+            throw IllegalArgumentException("Email already exists")
+        }
+
+        val account = Account(
+            username = accountRegistrationDTO.username,
+            email = accountRegistrationDTO.email,
+            password = passwordEncoder.encode(rawPassword),
+            firstName = accountRegistrationDTO.firstName,
+            lastName = accountRegistrationDTO.lastName
+        )
+        return accountRepository.save(account)
+    }
+
+    fun login(accountLoginDTO: AccountLoginDto): String {
+        val account = accountRepository.findByUsername(accountLoginDTO.username)
+            ?: throw IllegalArgumentException("Invalid username or password")
+
+
+        if (!passwordEncoder.matches(accountLoginDTO.password, account.password)) {
+            throw IllegalArgumentException("Invalid username or password")
+        }
+
+
+        return "Login successful for user: ${account.username}"
+    }
+
+
 
 }
 
