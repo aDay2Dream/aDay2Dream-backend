@@ -1,20 +1,20 @@
 package com.aday2dream.aday2dream.service
 
 import com.aday2dream.aday2dream.dto.AccountDto
-import com.aday2dream.aday2dream.dto.AccountLoginDto
-
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
+
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class AccountService(@Autowired
+class AccountService(
+                    @Autowired
                      private val accountRepository: AccountRepository,
                      private val passwordEncoder: PasswordEncoder,
-                     private val authenticationManager: AuthenticationManager
+
+
 ) {
 
     private fun mapToDto(account: Account): AccountDto {
@@ -80,7 +80,7 @@ class AccountService(@Autowired
         val savedAccount = accountRepository.save(updatedAccount)
         return mapToDto(savedAccount)
     }
-
+ 
 
     fun deleteAccount(accountId: Long) {
         if (!accountRepository.existsById(accountId)) {
@@ -114,21 +114,7 @@ class AccountService(@Autowired
         return accountRepository.save(account)
     }
 
-    fun login(accountLoginDTO: AccountLoginDto): String {
-        val account = accountRepository.findByUsername(accountLoginDTO.username)
-            ?: throw IllegalArgumentException("Invalid username or password")
-
-
-        if (!passwordEncoder.matches(accountLoginDTO.password, account.password)) {
-            throw IllegalArgumentException("Invalid username or password")
-        }
-
-
-        return "Login successful for user: ${account.username}"
     }
 
-
-
-}
 
 

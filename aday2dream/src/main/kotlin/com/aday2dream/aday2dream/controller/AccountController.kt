@@ -4,15 +4,21 @@ import com.aday2dream.aday2dream.dto.AccountDto
 import com.aday2dream.aday2dream.dto.AccountLoginDto
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.service.AccountService
+import com.aday2dream.aday2dream.service.JwtService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 @RequestMapping("/accounts")
-class AccountController(@Autowired private val accountService: AccountService) {
+class AccountController(@Autowired private val accountService: AccountService,
+                        private val authenticationManager: AuthenticationManager,
+) {
 
     @PostMapping("/register")
     fun register(@RequestBody accountDto: AccountDto,
@@ -22,14 +28,17 @@ class AccountController(@Autowired private val accountService: AccountService) {
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody accountLoginDto: AccountLoginDto): ResponseEntity<Map<String, String>?> {
-        return try {
-            val token = accountService.login(accountLoginDto)
-            ResponseEntity.ok(mapOf("message" to token))
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to (e.message ?: "Invalid credentials")))
-        }
+    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<String?> {
+        println("Received login request: ${accountLoginDTO.username}")
+
+        val authentication = authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(accountLoginDTO.username, accountLoginDTO.password)
+        )
+        val user = authentication.principal as UserDetails
+        val token = JwtService.generateToken(accountLoginDTO.username)
+        return ResponseEntity.ok(token)
     }
+
 
     @PostMapping
     fun createAccount(@RequestBody account: AccountDto,
@@ -47,8 +56,10 @@ class AccountController(@Autowired private val accountService: AccountService) {
 
     @GetMapping("/{id}")
     fun getAccountById(@PathVariable("id") accountId: Long): ResponseEntity<AccountDto> {
-        val user = accountService.getAccountById(accountId)
-        return ResponseEntity.ok(user)
+        val account = accountService.getAccountById(accountId)
+
+        return ResponseEntity.ok(account)
+
     }
 
 

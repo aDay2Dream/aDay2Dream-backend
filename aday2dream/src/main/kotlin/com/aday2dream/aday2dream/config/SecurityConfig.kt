@@ -1,20 +1,31 @@
 package com.aday2dream.aday2dream.config
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class SecurityConfig {
+@EnableWebSecurity
+class SecurityConfig (
+                      private val userDetailsService: CustomUserDetailsService,
+                      private val jwtAuthFilter: JwtAuthFilter
+) {
+
+    fun configure(auth: AuthenticationManagerBuilder, passwordEncoder: PasswordEncoder) {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
+    }
+
+
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
@@ -23,34 +34,34 @@ class SecurityConfig {
 
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .csrf { it.disable() }
+    fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
+
+        http.csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth
-                    .anyRequest().permitAll()
+                    .requestMatchers(HttpMethod.POST,"/accounts/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/accounts/register").permitAll()
+                auth.anyRequest().authenticated()
             }
-            .formLogin { it.disable() } // Disable default form login for APIs
-            .httpBasic { it.disable() } // Use token-based auth or custom logic
+            .exceptionHandling {
+                it.authenticationEntryPoint { _, response, _ ->
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "I will kill myself")
+                }
+            }
+
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .authenticationManager(authenticationManager)
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+
         return http.build()
     }
 
-
-    /*
-        @Bean
-        fun userDetailsService(): UserDetailsService {
-            val encodedPassword = passwordEncoder().encode("password")
-            val user = User.builder()
-                .username("user")
-                .password(encodedPassword)
-                .roles("USER")
-                .build()
-            return InMemoryUserDetailsManager(user)
-        }
-    */
-
     @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
-        return authConfig.authenticationManager
+    fun authenticationManager(http: HttpSecurity, passwordEncoder : PasswordEncoder): AuthenticationManager {
+        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
+        return authenticationManagerBuilder.build()
     }
+
+
 }
