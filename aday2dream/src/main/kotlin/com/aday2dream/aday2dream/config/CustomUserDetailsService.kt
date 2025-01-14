@@ -1,7 +1,6 @@
 package com.aday2dream.aday2dream.config
 
 import com.aday2dream.aday2dream.repository.AccountRepository
-import javassist.NotFoundException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
