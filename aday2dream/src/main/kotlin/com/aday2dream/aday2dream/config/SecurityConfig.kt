@@ -20,12 +20,9 @@ class SecurityConfig (
                       private val userDetailsService: CustomUserDetailsService,
                       private val jwtAuthFilter: JwtAuthFilter
 ) {
-
     fun configure(auth: AuthenticationManagerBuilder, passwordEncoder: PasswordEncoder) {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
     }
-
-
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {

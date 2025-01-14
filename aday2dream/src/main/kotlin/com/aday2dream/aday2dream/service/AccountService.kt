@@ -13,10 +13,7 @@ class AccountService(
                     @Autowired
                      private val accountRepository: AccountRepository,
                      private val passwordEncoder: PasswordEncoder,
-
-
 ) {
-
     private fun mapToDto(account: Account): AccountDto {
         return AccountDto(
             accountId = account.accountId,
@@ -52,17 +49,14 @@ class AccountService(
         return mapToDto(savedAccount)
     }
 
-
     fun getAllAccounts(): List<AccountDto> {
         return accountRepository.findAll().map { mapToDto(it) }
     }
-
 
     fun getAccountById(accountId: Long): AccountDto {
         val account = accountRepository.findById(accountId).orElseThrow { RuntimeException("User not found") }
         return mapToDto(account)
     }
-
 
     fun updateAccount(accountId: Long, accountDto: AccountDto, rawPassword: String?): AccountDto {
 
@@ -80,7 +74,6 @@ class AccountService(
         val savedAccount = accountRepository.save(updatedAccount)
         return mapToDto(savedAccount)
     }
- 
 
     fun deleteAccount(accountId: Long) {
         if (!accountRepository.existsById(accountId)) {

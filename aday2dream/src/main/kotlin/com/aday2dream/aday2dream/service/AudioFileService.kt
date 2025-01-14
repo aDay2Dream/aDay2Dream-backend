@@ -15,10 +15,7 @@ class AudioFileService(
     private val audioFileRepository: AudioFileRepository,
     @Value("\${audiofile.storage.directory}")private val uploadDir: String
 ) {
-
     private val storageDirectory: Path = Paths.get(uploadDir)
-
-
 
     init {
 
@@ -52,6 +49,5 @@ class AudioFileService(
     }
 
     fun getAllAudioFiles(): List<AudioFile> = audioFileRepository.findAll()
-
 
 }
