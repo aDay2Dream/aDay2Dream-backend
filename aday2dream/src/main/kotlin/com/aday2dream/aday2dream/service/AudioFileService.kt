@@ -5,12 +5,9 @@ import com.aday2dream.aday2dream.repository.AudioFileRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
 
 @Service
@@ -24,25 +21,9 @@ class AudioFileService(
 
 
     init {
-            // Ensure the directory exists
+
         Files.createDirectories(storageDirectory)
     }
-    /*
-    fun saveFile(file: MultipartFile, title: String, duration: Int): AudioFile {
-        val filePath = Paths.get("uploads/${file.originalFilename}")
-        Files.createDirectories(filePath.parent) // Create directories if they don't exist
-        file.inputStream.use { inputStream ->
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING)
-        }
-
-        val audioFile = AudioFile(
-            uri = filePath.toString(),
-            title = title,
-            duration = duration
-        )
-        return audioFileRepository.save(audioFile)
-    }
-    */
 
     fun uploadAudioFile(file: MultipartFile, title: String, duration: Int): AudioFile {
         if (file.isEmpty) throw IllegalArgumentException("File cannot be empty")

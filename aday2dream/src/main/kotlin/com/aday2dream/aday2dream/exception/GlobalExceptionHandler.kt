@@ -2,6 +2,7 @@ package com.aday2dream.aday2dream.exception
 
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ConstraintViolationException
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -54,4 +55,5 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val errors = ex.constraintViolations.associate { it.propertyPath.toString() to it.message }
         return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
     }
+
 }

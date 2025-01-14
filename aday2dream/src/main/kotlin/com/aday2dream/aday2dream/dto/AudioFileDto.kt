@@ -5,5 +5,5 @@ data class AudioFileDTO(
     val title: String,
     val uri: String,
     val duration: Int,
-    val uploadedAt: String // ISO-8601 formatted timestamp
+    val uploadedAt: String
 )

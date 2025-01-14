@@ -57,9 +57,7 @@ class AccountController(@Autowired private val accountService: AccountService,
     @GetMapping("/{id}")
     fun getAccountById(@PathVariable("id") accountId: Long): ResponseEntity<AccountDto> {
         val account = accountService.getAccountById(accountId)
-
         return ResponseEntity.ok(account)
-
     }
 
 
