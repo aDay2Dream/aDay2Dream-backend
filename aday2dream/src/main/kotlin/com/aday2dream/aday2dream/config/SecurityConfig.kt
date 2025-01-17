@@ -29,7 +29,6 @@ class SecurityConfig (
         return BCryptPasswordEncoder()
     }
 
-
     @Bean
     fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
 

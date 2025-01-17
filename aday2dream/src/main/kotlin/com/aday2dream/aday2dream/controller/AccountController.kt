@@ -26,9 +26,10 @@ class AccountController(@Autowired private val accountService: AccountService,
         val newAccount = accountService.register(accountDto, password)
         return ResponseEntity.ok(newAccount)
     }
+    
 
     @PostMapping("/login")
-    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<String?> {
+    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<Map<String, String>?> {
         println("Received login request: ${accountLoginDTO.username}")
 
         val authentication = authenticationManager.authenticate(
@@ -36,7 +37,7 @@ class AccountController(@Autowired private val accountService: AccountService,
         )
         val user = authentication.principal as UserDetails
         val token = JwtService.generateToken(accountLoginDTO.username)
-        return ResponseEntity.ok(token)
+        return ResponseEntity.ok(mapOf("token" to token))
     }
 
 
@@ -86,5 +87,4 @@ class AccountController(@Autowired private val accountService: AccountService,
         val isValid = accountService.verifyPassword(username, password)
         return ResponseEntity.ok(isValid)
     }
-
 }
