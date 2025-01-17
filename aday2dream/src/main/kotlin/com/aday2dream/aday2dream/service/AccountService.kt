@@ -5,6 +5,7 @@ import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -114,7 +115,15 @@ class AccountService(
         return accountRepository.save(account)
     }
 
+    fun getAccountByUsername(username: String): AccountDto {
+        val account = accountRepository.findByUsername(username)
+            ?: throw UsernameNotFoundException("Account not found for username: $username")
+
+        return mapToDto(account)
     }
+
+
+}
 
 
 

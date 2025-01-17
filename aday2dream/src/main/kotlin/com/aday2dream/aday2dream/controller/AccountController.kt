@@ -5,12 +5,18 @@ import com.aday2dream.aday2dream.dto.AccountLoginDto
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.service.AccountService
 import com.aday2dream.aday2dream.service.JwtService
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.web.bind.annotation.*
 
 
@@ -28,23 +34,20 @@ class AccountController(@Autowired private val accountService: AccountService,
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<String?> {
+    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<Map<String, String>?> {
         println("Received login request: ${accountLoginDTO.username}")
-
-        val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(accountLoginDTO.username, accountLoginDTO.password)
-        )
-        val user = authentication.principal as UserDetails
-        val token = JwtService.generateToken(accountLoginDTO.username)
-        return ResponseEntity.ok(token)
-    }
-
-
-    @PostMapping
-    fun createAccount(@RequestBody account: AccountDto,
-                      @RequestParam("password") password : String): ResponseEntity<AccountDto> {
-        val createdAccount = accountService.createAccount(account, password)
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount)
+         return try {
+            val authentication = authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(accountLoginDTO.username, accountLoginDTO.password)
+            )
+            val user = authentication.principal as UserDetails
+            val token = JwtService.generateToken(accountLoginDTO.username)
+            return ResponseEntity.ok(mapOf("token" to token))
+        } catch (e: BadCredentialsException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to "Invalid credentials"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapOf("error" to "An error occurred"))
+        }
     }
 
     @GetMapping
@@ -59,7 +62,6 @@ class AccountController(@Autowired private val accountService: AccountService,
         val account = accountService.getAccountById(accountId)
 
         return ResponseEntity.ok(account)
-
     }
 
 
@@ -69,24 +71,63 @@ class AccountController(@Autowired private val accountService: AccountService,
         @RequestBody updatedAccount: AccountDto,
         @RequestParam("password") password: String
     ): ResponseEntity<AccountDto> {
-        val user = accountService.updateAccount(accountId, updatedAccount, password)
-        return ResponseEntity.ok(user)
+        return try {
+            val user = accountService.updateAccount(accountId, updatedAccount, password)
+            ResponseEntity.ok(user)
+        } catch(e: Exception){
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problem updating account")
+        } as ResponseEntity<AccountDto>
     }
 
 
     @DeleteMapping("/{id}")
-    fun deleteAccount(@PathVariable("id") accountId: Long): ResponseEntity<Void> {
-        accountService.deleteAccount(accountId)
-        return ResponseEntity.noContent().build()
+    fun deleteAccount(@PathVariable("id") accountId: Long): ResponseEntity<String?> {
+        return try{
+            accountService.deleteAccount(accountId)
+            ResponseEntity.status(HttpStatus.CREATED).body("Account succesfully deleted")
+        } catch(e: Exception){
+
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("There was a problem with the deletion of the account.")
+        }
     }
 
-    @PostMapping("/verify")
-    fun verifyPassword(
-        @RequestParam("username") username: String,
-        @RequestParam("password") password: String
-    ): ResponseEntity<Boolean> {
-        val isValid = accountService.verifyPassword(username, password)
-        return ResponseEntity.ok(isValid)
+
+    @GetMapping("/profile")
+    fun getProfile(): ResponseEntity<AccountDto> {
+        return try
+        {
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        val username = authentication?.name
+
+        if (username.isNullOrEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
+
+            val account = accountService.getAccountByUsername(username)
+            ResponseEntity.ok(account)
+        } catch (e: UsernameNotFoundException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        } catch (e: Exception) {
+         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
+    @PostMapping("/logout")
+    fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<String> {
+        return try{
+            val authentication = SecurityContextHolder.getContext().authentication
+
+            if (authentication != null) {
+                SecurityContextLogoutHandler().logout(request, response, authentication)
+            }
+
+            return ResponseEntity.ok("Logged out successfully.")
+        } catch(e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to log out")
+        }
+    }
 }
