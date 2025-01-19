@@ -35,7 +35,7 @@ class JwtAuthFilter(
                 return
             }
 
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            if (authHeader.startsWith("Bearer ")) {
                 val token = authHeader.replace("Bearer ", "")
                 if (JwtBlacklistService.isBlacklisted(token)) {
                     response.status = HttpServletResponse.SC_UNAUTHORIZED

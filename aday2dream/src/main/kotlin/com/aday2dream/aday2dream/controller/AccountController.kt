@@ -20,7 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.web.bind.annotation.*
 
-
 @RestController
 @RequestMapping("/accounts")
 class AccountController(@Autowired private val accountService: AccountService,
@@ -57,14 +56,12 @@ class AccountController(@Autowired private val accountService: AccountService,
         return ResponseEntity.ok(users)
     }
 
-
     @GetMapping("/{id}")
     fun getAccountById(@PathVariable("id") accountId: Long): ResponseEntity<AccountDto> {
         val account = accountService.getAccountById(accountId)
 
         return ResponseEntity.ok(account)
     }
-
 
     @PutMapping("/{id}")
     fun updateAccount(
@@ -80,7 +77,6 @@ class AccountController(@Autowired private val accountService: AccountService,
         } as ResponseEntity<AccountDto>
     }
 
-
     @DeleteMapping("/{id}")
     fun deleteAccount(@PathVariable("id") accountId: Long): ResponseEntity<String?> {
         return try{
@@ -91,7 +87,6 @@ class AccountController(@Autowired private val accountService: AccountService,
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("There was a problem with the deletion of the account.")
         }
     }
-
 
     @GetMapping("/profile")
     fun getProfile(): ResponseEntity<AccountDto> {
