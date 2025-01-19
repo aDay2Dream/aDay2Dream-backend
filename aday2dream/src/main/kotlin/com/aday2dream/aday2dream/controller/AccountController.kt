@@ -4,6 +4,7 @@ import com.aday2dream.aday2dream.dto.AccountDto
 import com.aday2dream.aday2dream.dto.AccountLoginDto
 import com.aday2dream.aday2dream.model.Account
 import com.aday2dream.aday2dream.service.AccountService
+import com.aday2dream.aday2dream.service.JwtBlacklistService
 import com.aday2dream.aday2dream.service.JwtService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -120,11 +121,13 @@ class AccountController(@Autowired private val accountService: AccountService,
     ): ResponseEntity<String> {
         return try{
             val authentication = SecurityContextHolder.getContext().authentication
-
             if (authentication != null) {
+                val token = request.getHeader("Authorization")?.replace("Bearer ", "")
+                if (!token.isNullOrEmpty()) {
+                    JwtBlacklistService.addToBlacklist(token)
+                }
                 SecurityContextLogoutHandler().logout(request, response, authentication)
             }
-
             return ResponseEntity.ok("Logged out successfully.")
         } catch(e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to log out")
