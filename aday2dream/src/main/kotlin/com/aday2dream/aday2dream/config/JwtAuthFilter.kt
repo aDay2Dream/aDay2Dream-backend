@@ -1,5 +1,6 @@
 package com.aday2dream.aday2dream.config
 
+import com.aday2dream.aday2dream.service.JwtBlacklistService
 import com.aday2dream.aday2dream.service.JwtService
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
@@ -27,7 +28,15 @@ class JwtAuthFilter(
             val token: String? = authHeader?.takeIf { it.startsWith("Bearer ") }?.substring(7)
             val username: String? = token?.let { JwtService.extractUsername(it) }
 
-            // If the token is null, pass the request to the next filter
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                val token = authHeader.replace("Bearer ", "")
+                if (JwtBlacklistService.isBlacklisted(token)) {
+                    response.status = HttpServletResponse.SC_UNAUTHORIZED
+                    response.writer.write("Token is invalid or has been logged out")
+                    return
+                }
+            }
             if (token == null) {
                 filterChain.doFilter(request, response)
                 return

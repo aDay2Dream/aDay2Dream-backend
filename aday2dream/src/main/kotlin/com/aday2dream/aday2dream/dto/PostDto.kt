@@ -3,7 +3,8 @@ package com.aday2dream.aday2dream.dto
 import java.math.BigDecimal
 
 data class PostDto(
-    val publisherId: Long?,
+    val postId: Long,
+    val accountId: Long?,
     val audiofileId: Long,
     val title: String,
     val description: String,

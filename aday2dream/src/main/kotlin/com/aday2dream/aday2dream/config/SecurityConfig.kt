@@ -31,7 +31,6 @@ class SecurityConfig (
 
     @Bean
     fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
-
         http.csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth
@@ -58,6 +57,4 @@ class SecurityConfig (
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
         return authenticationManagerBuilder.build()
     }
-
-
 }

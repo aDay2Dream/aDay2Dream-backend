@@ -22,7 +22,6 @@ data class Account(
     @Column(name="username", nullable = false, unique = true)
     val username: String,
 
-
     @Column(name="password", nullable = false)
     val password: String,
 

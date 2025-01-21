@@ -22,7 +22,8 @@ class PostMapper(){
 
     fun toDTO(post: Post): PostDto{
         return PostDto(
-            publisherId = post.account.accountId,
+            postId = post.postId,
+            accountId = post.account.accountId,
             audiofileId = post.audiofile.audiofileId,
             title = post.title,
             description = post.description,
@@ -30,7 +31,6 @@ class PostMapper(){
         hyperlinks = post.hyperlinks,
         price = post.price
         )
-
     }
 
 

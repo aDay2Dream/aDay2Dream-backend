@@ -10,7 +10,7 @@ data class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    val id: Long = 0,
+    val postId: Long = 0,
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)

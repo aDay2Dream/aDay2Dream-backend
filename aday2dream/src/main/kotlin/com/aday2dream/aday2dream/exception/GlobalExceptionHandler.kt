@@ -54,4 +54,9 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Map<String, String>> {
+        val errors = ex.bindingResult.fieldErrors.associate { it.field to it.defaultMessage.orEmpty() }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
+    }
 }
