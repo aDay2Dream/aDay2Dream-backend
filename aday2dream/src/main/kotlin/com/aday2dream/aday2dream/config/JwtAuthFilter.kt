@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthFilter(
-    private val userDetailsService: CustomUserDetailsService,
+    private val userDetailsService: AccountDetailsService,
     private val objectMapper: ObjectMapper
 ) : OncePerRequestFilter() {
 

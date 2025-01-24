@@ -1,5 +1,6 @@
 package com.aday2dream.aday2dream.config
 
+import com.aday2dream.aday2dream.service.AccountService
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig (
-                      private val userDetailsService: CustomUserDetailsService,
+                      private val userDetailsService: AccountDetailsService,
                       private val jwtAuthFilter: JwtAuthFilter
 ) {
 

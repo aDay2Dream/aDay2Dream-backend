@@ -1,7 +1,8 @@
 package com.aday2dream.aday2dream.service
 
 import com.aday2dream.aday2dream.dto.AccountDto
-import com.aday2dream.aday2dream.model.Account
+import com.aday2dream.aday2dream.mapper.AccountMapper
+import com.aday2dream.aday2dream.entity.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,59 +12,31 @@ import org.springframework.stereotype.Service
 
 @Service
 class AccountService(
+
                     @Autowired
                      private val accountRepository: AccountRepository,
                      private val passwordEncoder: PasswordEncoder,
-
+                     private val accountMapper: AccountMapper,
 
 ) {
 
-    private fun mapToDto(account: Account): AccountDto {
-        return AccountDto(
-            accountId = account.accountId,
-            username = account.username,
-            email = account.email,
-            firstName = account.firstName,
-            lastName = account.lastName,
-            profilePicture = account.profilePicture,
-            description = account.description,
-            links = account.links
-        )
-    }
-
-    private fun mapToEntity(userDto: AccountDto, hashedPassword: String): Account {
-        return Account(
-            accountId = userDto.accountId,
-            username = userDto.username,
-            password = hashedPassword,
-            email = userDto.email,
-            firstName = userDto.firstName,
-            lastName = userDto.lastName,
-            profilePicture = userDto.profilePicture,
-            description = userDto.description,
-            links = userDto.links
-        )
-    }
-
-    fun createAccount(account: AccountDto, rawPassword: String): AccountDto {
+    fun createAccount(accountDto: AccountDto, rawPassword: String): AccountDto {
         val hashedPassword = passwordEncoder.encode(rawPassword)
 
-        val account = mapToEntity(account, hashedPassword)
+        val account = accountMapper.toBean(accountDto)
+        account.password = hashedPassword
         val savedAccount = accountRepository.save(account)
-        return mapToDto(savedAccount)
+        return accountMapper.toDto(account)
     }
-
 
     fun getAllAccounts(): List<AccountDto> {
-        return accountRepository.findAll().map { mapToDto(it) }
+        return accountRepository.findAll().map { accountMapper.toDto(it) }
     }
-
 
     fun getAccountById(accountId: Long): AccountDto {
         val account = accountRepository.findById(accountId).orElseThrow { RuntimeException("User not found") }
-        return mapToDto(account)
+        return accountMapper.toDto(account)
     }
-
 
     fun updateAccount(accountId: Long, accountDto: AccountDto, rawPassword: String?): AccountDto {
 
@@ -79,9 +52,8 @@ class AccountService(
             links = accountDto.links
         )
         val savedAccount = accountRepository.save(updatedAccount)
-        return mapToDto(savedAccount)
+        return accountMapper.toDto(savedAccount)
     }
- 
 
     fun deleteAccount(accountId: Long) {
         if (!accountRepository.existsById(accountId)) {
@@ -90,28 +62,17 @@ class AccountService(
         accountRepository.deleteById(accountId)
     }
 
-    fun verifyPassword(username: String, rawPassword: String): Boolean {
-        val account = accountRepository.findByUsername(username)
-            ?: throw RuntimeException("User not found")
-        return passwordEncoder.matches(rawPassword, account.password)
-    }
-
-    fun register(accountRegistrationDTO: AccountDto, rawPassword: String): Account {
-
-        if (accountRepository.existsByUsername(accountRegistrationDTO.username)) {
+    fun register(accountDto: AccountDto, rawPassword: String): Account {
+        var account = accountRepository.findByUsername(accountDto.username)
+        if (account == null) {
             throw IllegalArgumentException("Username already exists")
         }
-        if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
+        account = accountRepository.findByEmail(accountDto.email)
+        if (account == null) {
             throw IllegalArgumentException("Email already exists")
         }
+        account = accountMapper.toBean(accountDto)
 
-        val account = Account(
-            username = accountRegistrationDTO.username,
-            email = accountRegistrationDTO.email,
-            password = passwordEncoder.encode(rawPassword),
-            firstName = accountRegistrationDTO.firstName,
-            lastName = accountRegistrationDTO.lastName
-        )
         return accountRepository.save(account)
     }
 
@@ -119,10 +80,8 @@ class AccountService(
         val account = accountRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Account not found for username: $username")
 
-        return mapToDto(account)
+        return accountMapper.toDto(account)
     }
-
-
 }
 
 
