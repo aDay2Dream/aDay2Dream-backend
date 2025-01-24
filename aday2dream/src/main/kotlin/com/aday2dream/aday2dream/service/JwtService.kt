@@ -16,6 +16,7 @@ import java.util.Date
 object JwtService {
 
     private var SECRET_KEY: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+
     @Value("\${jwt.minutes}")
     private val minutes: Long = 60
 
