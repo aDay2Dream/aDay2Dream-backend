@@ -1,6 +1,7 @@
 package com.aday2dream.aday2dream.service
 
 import com.aday2dream.aday2dream.dto.AccountDto
+import com.aday2dream.aday2dream.dto.AccountRegisterDto
 import com.aday2dream.aday2dream.mapper.AccountMapper
 import com.aday2dream.aday2dream.entity.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
@@ -12,22 +13,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class AccountService(
-
                     @Autowired
                      private val accountRepository: AccountRepository,
                      private val passwordEncoder: PasswordEncoder,
                      private val accountMapper: AccountMapper,
 
 ) {
-
-    fun createAccount(accountDto: AccountDto, rawPassword: String): AccountDto {
-        val hashedPassword = passwordEncoder.encode(rawPassword)
-
-        val account = accountMapper.toBean(accountDto)
-        account.password = hashedPassword
-        val savedAccount = accountRepository.save(account)
-        return accountMapper.toDto(account)
-    }
 
     fun getAllAccounts(): List<AccountDto> {
         return accountRepository.findAll().map { accountMapper.toDto(it) }
@@ -62,17 +53,21 @@ class AccountService(
         accountRepository.deleteById(accountId)
     }
 
-    fun register(accountDto: AccountDto, rawPassword: String): Account {
+    fun register(accountDto: AccountRegisterDto): Account {
+        val hashedPassword = passwordEncoder.encode(accountDto.password)
         var account = accountRepository.findByUsername(accountDto.username)
-        if (account == null) {
+        println(account)
+        if (account != null) {
             throw IllegalArgumentException("Username already exists")
         }
         account = accountRepository.findByEmail(accountDto.email)
-        if (account == null) {
+        if (account != null) {
             throw IllegalArgumentException("Email already exists")
         }
-        account = accountMapper.toBean(accountDto)
-
+        println(accountDto)
+        account = accountMapper.toEntity(accountDto)
+        account.password = hashedPassword
+        println(account)
         return accountRepository.save(account)
     }
 

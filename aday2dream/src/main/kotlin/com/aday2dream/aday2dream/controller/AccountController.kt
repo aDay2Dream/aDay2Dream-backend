@@ -2,6 +2,7 @@ package com.aday2dream.aday2dream.controller
 
 import com.aday2dream.aday2dream.dto.AccountDto
 import com.aday2dream.aday2dream.dto.AccountLoginDto
+import com.aday2dream.aday2dream.dto.AccountRegisterDto
 import com.aday2dream.aday2dream.entity.Account
 import com.aday2dream.aday2dream.service.AccountService
 import com.aday2dream.aday2dream.service.JwtBlacklistService
@@ -26,21 +27,20 @@ class AccountController(@Autowired private val accountService: AccountService,
                         private val authenticationManager: AuthenticationManager,
 ) {
     @PostMapping("/register")
-    fun register(@RequestBody accountDto: AccountDto,
-    @RequestParam("password") password: String): ResponseEntity<Account> {
-        val newAccount = accountService.register(accountDto, password)
+    fun register(@RequestBody accountRegisterDto: AccountRegisterDto): ResponseEntity<Account> {
+        val newAccount = accountService.register(accountRegisterDto)
         return ResponseEntity.ok(newAccount)
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<Map<String, String>?> {
-        println("Received login request: ${accountLoginDTO.username}")
+    fun login(@RequestBody accountLoginDto: AccountLoginDto): ResponseEntity<Map<String, String>?> {
+        println("Received login request: ${accountLoginDto.username}")
          return try {
             val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(accountLoginDTO.username, accountLoginDTO.password)
+                UsernamePasswordAuthenticationToken(accountLoginDto.username, accountLoginDto.password)
             )
             val user = authentication.principal as UserDetails
-            val token = JwtService.generateToken(accountLoginDTO.username)
+            val token = JwtService.generateToken(accountLoginDto.username)
             return ResponseEntity.ok(mapOf("token" to token))
         } catch (e: BadCredentialsException) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to "Invalid credentials"))

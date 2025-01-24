@@ -48,10 +48,10 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 	implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
 	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("org.mapstruct:mapstruct:1.5.3.Final")
-	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
-	implementation("org.mapstruct:mapstruct-processor:1.5.3.Final")
-	kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
+	implementation("org.mapstruct:mapstruct:1.6.3")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+	implementation("org.mapstruct:mapstruct-processor:1.6.3")
+	kapt("org.mapstruct:mapstruct-processor:1.6.3")
 }
 
 kotlin {
@@ -62,7 +62,7 @@ kotlin {
 
 kapt {
 	arguments {
-		arg("mapstruct.defaultComponentModel", "spring") // Example of additional MapStruct argument if needed
+		arg("mapstruct.defaultComponentModel", "spring")
 	}
 }
 
