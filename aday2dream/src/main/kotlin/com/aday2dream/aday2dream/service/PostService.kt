@@ -1,5 +1,5 @@
 package com.aday2dream.aday2dream.service
-import com.aday2dream.aday2dream.model.Post
+import com.aday2dream.aday2dream.entity.Post
 import com.aday2dream.aday2dream.repository.PostRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -1,7 +1,7 @@
 package com.aday2dream.aday2dream.service
 
 import com.aday2dream.aday2dream.dto.AccountDto
-import com.aday2dream.aday2dream.model.Account
+import com.aday2dream.aday2dream.entity.Account
 import com.aday2dream.aday2dream.repository.AccountRepository
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -92,12 +92,6 @@ class AccountService(
 
     fun register(accountRegistrationDTO: AccountDto, rawPassword: String): Account {
 
-        if (accountRepository.existsByUsername(accountRegistrationDTO.username)) {
-            throw IllegalArgumentException("Username already exists")
-        }
-        if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
-            throw IllegalArgumentException("Email already exists")
-        }
 
         val account = Account(
             username = accountRegistrationDTO.username,
@@ -106,6 +100,15 @@ class AccountService(
             firstName = accountRegistrationDTO.firstName,
             lastName = accountRegistrationDTO.lastName
         )
+        var existingAccount = accountRepository.findByUsername(account.username)
+
+        if (existingAccount == null) {
+            throw IllegalArgumentException("Username already exists")
+        }
+        existingAccount = accountRepository.findByEmail(account.email)
+        if (existingAccount == null) {
+            throw IllegalArgumentException("Email already exists")
+        }
         return accountRepository.save(account)
     }
 

@@ -2,7 +2,7 @@ package com.aday2dream.aday2dream.controller
 
 import com.aday2dream.aday2dream.dto.AccountDto
 import com.aday2dream.aday2dream.dto.AccountLoginDto
-import com.aday2dream.aday2dream.model.Account
+import com.aday2dream.aday2dream.entity.Account
 import com.aday2dream.aday2dream.service.AccountService
 import com.aday2dream.aday2dream.service.JwtService
 import jakarta.servlet.http.HttpServletRequest
@@ -34,7 +34,7 @@ class AccountController(@Autowired private val accountService: AccountService,
     
 
     @PostMapping("/login")
-    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<Map<String, String>?> {
+    fun login(@RequestBody accountLoginDTO: AccountLoginDto): ResponseEntity<Map<String, String>> {
         println("Received login request: ${accountLoginDTO.username}")
 
         val authentication = authenticationManager.authenticate(

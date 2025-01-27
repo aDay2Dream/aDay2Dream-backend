@@ -1,6 +1,6 @@
 package com.aday2dream.aday2dream.mapper
 import com.aday2dream.aday2dream.dto.AudioFileDTO
-import com.aday2dream.aday2dream.model.AudioFile
+import com.aday2dream.aday2dream.entity.AudioFile
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 

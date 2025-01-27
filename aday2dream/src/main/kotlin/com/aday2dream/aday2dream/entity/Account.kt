@@ -1,4 +1,4 @@
-package com.aday2dream.aday2dream.model
+package com.aday2dream.aday2dream.entity
 
 import java.sql.Timestamp
 import jakarta.persistence.*

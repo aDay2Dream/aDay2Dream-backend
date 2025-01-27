@@ -1,6 +1,6 @@
 package com.aday2dream.aday2dream.controller
 
-import com.aday2dream.aday2dream.model.Post
+import com.aday2dream.aday2dream.entity.Post
 import com.aday2dream.aday2dream.service.PostService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

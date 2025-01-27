@@ -1,6 +1,6 @@
 package com.aday2dream.aday2dream.service
 
-import com.aday2dream.aday2dream.model.AudioFile
+import com.aday2dream.aday2dream.entity.AudioFile
 import com.aday2dream.aday2dream.repository.AudioFileRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
