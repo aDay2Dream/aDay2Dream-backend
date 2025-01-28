@@ -1,4 +1,4 @@
-package com.aday2dream.aday2dream.model
+package com.aday2dream.aday2dream.entity
 
 import java.sql.Timestamp
 import jakarta.persistence.*
@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size
 import lombok.*
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "account")
@@ -23,7 +24,7 @@ data class Account(
     val username: String,
 
     @Column(name="password", nullable = false)
-    val password: String,
+    var password: String,
 
     @Email
     @field:NotBlank(message = "Email is required.")

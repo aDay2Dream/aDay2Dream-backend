@@ -1,9 +1,11 @@
 package com.aday2dream.aday2dream.dto
+
 import java.sql.Timestamp
 
-data class AccountDto (
+data class AccountRegisterDto (
     val accountId: Long? = null,
     val username: String,
+    val password: String,
     val email: String,
     val firstName: String,
     val lastName: String,
@@ -12,4 +14,4 @@ data class AccountDto (
     val links: String? = null,
     val createdAt: Timestamp? = null,
     val updatedAt: Timestamp? = null
-)
+    )

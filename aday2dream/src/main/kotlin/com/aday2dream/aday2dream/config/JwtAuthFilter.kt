@@ -12,11 +12,16 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+
 
 @Component
 class JwtAuthFilter(
-    private val userDetailsService: CustomUserDetailsService,
-    private val objectMapper: ObjectMapper
+    private val userDetailsService: AccountDetailsService,
+    private val objectMapper: ObjectMapper,
+    private val logger: Logger = LoggerFactory.getLogger(JwtAuthFilter::class.java)
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -29,7 +34,12 @@ class JwtAuthFilter(
             val username: String? = token?.let { JwtService.extractUsername(it) }
 
 
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            if (token == null) {
+                filterChain.doFilter(request, response)
+                return
+            }
+
+            if (authHeader.startsWith("Bearer ")) {
                 val token = authHeader.replace("Bearer ", "")
                 if (JwtBlacklistService.isBlacklisted(token)) {
                     response.status = HttpServletResponse.SC_UNAUTHORIZED
@@ -37,12 +47,7 @@ class JwtAuthFilter(
                     return
                 }
             }
-            if (token == null) {
-                filterChain.doFilter(request, response)
-                return
-            }
 
-            // If username is present and not authenticated, validate the token and set authentication
             if (username != null && SecurityContextHolder.getContext().authentication == null) {
                 val userDetails: UserDetails = userDetailsService.loadUserByUsername(username)
                 if (JwtService.validateToken(token, userDetails)) {
@@ -75,7 +80,8 @@ class JwtAuthFilter(
         return try {
             objectMapper.writeValueAsString(response)
         } catch (e: Exception) {
-            "" // Return an empty string if serialization fails
+            logger.error("Serialization failed: ${e.message}", e)
+            ""
         }
     }
 }
