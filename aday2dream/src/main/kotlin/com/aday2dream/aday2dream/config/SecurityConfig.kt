@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig (
-                      private val userDetailsService: CustomUserDetailsService,
+                      private val userDetailsService: AccountDetailsService,
                       private val jwtAuthFilter: JwtAuthFilter
 ) {
     fun configure(auth: AuthenticationManagerBuilder, passwordEncoder: PasswordEncoder) {
@@ -28,7 +28,6 @@ class SecurityConfig (
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
-
 
     @Bean
     fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
@@ -59,6 +58,4 @@ class SecurityConfig (
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
         return authenticationManagerBuilder.build()
     }
-
-
 }

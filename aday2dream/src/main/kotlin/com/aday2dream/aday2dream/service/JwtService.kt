@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import java.security.Key
 import java.time.Instant
@@ -14,15 +15,17 @@ import java.util.Date
 
 object JwtService {
 
-    private val SECRET_KEY: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
-    private const val MINUTES: Long = 60
+    private var SECRET_KEY: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+
+    @Value("\${jwt.minutes}")
+    private val minutes: Long = 60
 
     fun generateToken(email: String): String {
         val now = Instant.now()
         return Jwts.builder()
             .setSubject(email)
             .setIssuedAt(Date.from(now))
-            .setExpiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
+            .setExpiration(Date.from(now.plus(minutes, ChronoUnit.MINUTES)))
             .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
             .compact()
     }
