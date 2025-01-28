@@ -1,6 +1,8 @@
 package com.aday2dream.aday2dream.service
 
-import com.aday2dream.aday2dream.model.AudioFile
+import com.aday2dream.aday2dream.dto.AudioFileDto
+import com.aday2dream.aday2dream.entity.AudioFile
+import com.aday2dream.aday2dream.mapper.AudioFileMapper
 import com.aday2dream.aday2dream.repository.AudioFileRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -13,16 +15,16 @@ import kotlin.io.path.exists
 @Service
 class AudioFileService(
     private val audioFileRepository: AudioFileRepository,
+    private val audioFileMapper: AudioFileMapper,
     @Value("\${audiofile.storage.directory}")private val uploadDir: String
 ) {
     private val storageDirectory: Path = Paths.get(uploadDir)
 
     init {
-
         Files.createDirectories(storageDirectory)
     }
 
-    fun uploadAudioFile(file: MultipartFile, title: String, duration: Int): AudioFile {
+    fun uploadAudioFile(file: MultipartFile, title: String, duration: Int): AudioFileDto {
         if (file.isEmpty) throw IllegalArgumentException("File cannot be empty")
 
         val filePath = Paths.get(uploadDir, file.originalFilename ?: throw IllegalArgumentException("Invalid file name"))
@@ -33,11 +35,14 @@ class AudioFileService(
             title = title,
             duration = duration
         )
-        return audioFileRepository.save(audioFile)
+        audioFileRepository.save(audioFile)
+        return audioFileMapper.toDto(audioFile)
     }
 
-    fun getAudioFileById(id: Long): AudioFile =
-        audioFileRepository.findById(id).orElseThrow { IllegalArgumentException("Audio file not found") }
+    fun getAudioFileById(id: Long): AudioFileDto{
+        return audioFileMapper.toDto(audioFileRepository.findById(id).orElseThrow { RuntimeException("AudioFile not found") })
+    }
+
 
     fun deleteAudioFile(id: Long) {
         val audioFile = getAudioFileById(id)
@@ -48,6 +53,7 @@ class AudioFileService(
         audioFileRepository.deleteById(id)
     }
 
-    fun getAllAudioFiles(): List<AudioFile> = audioFileRepository.findAll()
+    fun getAllAudioFiles(): List<AudioFileDto> = audioFileMapper.toDtoList(audioFileRepository.findAll())
+
 
 }
