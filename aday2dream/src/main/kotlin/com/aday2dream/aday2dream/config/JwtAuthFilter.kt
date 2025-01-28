@@ -12,13 +12,17 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+
 
 @Component
 class JwtAuthFilter(
     private val userDetailsService: AccountDetailsService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val logger: Logger = LoggerFactory.getLogger(JwtAuthFilter::class.java)
 ) : OncePerRequestFilter() {
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -76,6 +80,7 @@ class JwtAuthFilter(
         return try {
             objectMapper.writeValueAsString(response)
         } catch (e: Exception) {
+            logger.error("Serialization failed: ${e.message}", e)
             ""
         }
     }
