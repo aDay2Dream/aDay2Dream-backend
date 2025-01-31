@@ -1,6 +1,5 @@
 package com.aday2dream.aday2dream.controller
 
-import com.aday2dream.aday2dream.mapper.AudioFileMapper
 import com.aday2dream.aday2dream.service.AudioFileService
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException
 import org.springframework.http.HttpStatus
@@ -14,7 +13,6 @@ import java.io.FileNotFoundException
 @RequestMapping("/audiofiles")
 class AudioFileController(
     private val audioFileService: AudioFileService,
-    private val audioFileMapper: AudioFileMapper
 ) {
     @PostMapping("/upload")
     fun uploadAudioFile(
@@ -24,7 +22,7 @@ class AudioFileController(
     ): ResponseEntity<Any> {
         return try {
             val uploadedFile = audioFileService.uploadAudioFile(file, title, duration)
-            ResponseEntity.ok(audioFileMapper.toDTO(uploadedFile))
+            ResponseEntity.ok(uploadedFile)
         }catch (ex: FileSizeLimitExceededException) {
             ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(mapOf("error" to "File size exceeds the maximum allowed limit."))
@@ -38,8 +36,8 @@ class AudioFileController(
     fun getAudioFileById(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
             val audioFile = audioFileService.getAudioFileById(id)
-            return ResponseEntity.ok(audioFileMapper.toDTO(audioFile))
-        }catch (ex: FileNotFoundException) {
+            ResponseEntity.ok(audioFile)
+        } catch (ex: FileNotFoundException) {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(mapOf("error" to "File not found: ${ex.message}"))
         } catch (ex: Exception) {
@@ -50,11 +48,10 @@ class AudioFileController(
 
     @GetMapping
     fun getAllAudioFiles(): ResponseEntity<Any> {
-        try{
+        try {
             val audioFiles = audioFileService.getAllAudioFiles()
-            val audioFileDTOs = audioFiles.map { audioFileMapper.toDTO(it) }
-            return ResponseEntity.ok(audioFileDTOs)
-        }catch(ex: Exception) {
+            return ResponseEntity.ok(audioFiles)
+        } catch(ex: Exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(mapOf("error" to "An error occured while listing the files"))
         }

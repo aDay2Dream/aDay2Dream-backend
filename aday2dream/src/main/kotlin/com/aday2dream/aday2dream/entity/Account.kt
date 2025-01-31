@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size
 import lombok.*
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "account")
@@ -23,7 +24,7 @@ data class Account(
     val username: String,
 
     @Column(name="password", nullable = false)
-    val password: String,
+    var password: String,
 
     @Email
     @field:NotBlank(message = "Email is required.")
