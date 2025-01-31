@@ -14,7 +14,7 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.security.auth.login.AccountException
 
-@RestControllerAdvice
+@ControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
@@ -57,6 +57,4 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val errors = ex.bindingResult.fieldErrors.associate { it.field to it.defaultMessage.orEmpty() }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
     }
-
-
 }
