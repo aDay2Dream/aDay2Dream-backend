@@ -72,7 +72,6 @@ class PromptService(
                 endDate = updatedPromptDto.endDate,
                 updatedAt = LocalDateTime.now()
             )
-
             val savedPrompt = promptRepository.save(updatedPrompt)
             return promptMapper.toDto(savedPrompt)
         }

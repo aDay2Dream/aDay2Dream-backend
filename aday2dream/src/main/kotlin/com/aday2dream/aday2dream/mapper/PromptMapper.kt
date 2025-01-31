@@ -11,16 +11,13 @@ import org.mapstruct.factory.Mappers
 
 @Mapper(componentModel = "spring")
 abstract class PromptMapper {
-
     companion object {
         val INSTANCE: PromptMapper = Mappers.getMapper(PromptMapper::class.java)
     }
 
-
     @Mapping(source = "post.postId", target = "postId")
     @Mapping(source = "buyer.accountId", target = "buyerId")
     abstract fun toDto(prompt: Prompt): PromptDto
-
 
     fun toEntity(promptDto: PromptDto, post: Post, buyer: Account): Prompt {
         return Prompt(
