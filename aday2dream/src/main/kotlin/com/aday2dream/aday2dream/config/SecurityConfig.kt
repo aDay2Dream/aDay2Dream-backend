@@ -40,7 +40,7 @@ class SecurityConfig (
             }
             .exceptionHandling {
                 it.authenticationEntryPoint { _, response, _ ->
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "I will kill myself")
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "")
                 }
             }
 

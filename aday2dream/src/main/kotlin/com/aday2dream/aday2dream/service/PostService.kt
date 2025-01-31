@@ -1,5 +1,6 @@
 package com.aday2dream.aday2dream.service
-import com.aday2dream.aday2dream.model.Post
+
+import com.aday2dream.aday2dream.entity.Post
 import com.aday2dream.aday2dream.repository.PostRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,7 +24,7 @@ class PostService(
     }
 
     fun getPostsByPublisherId(accountId: Long): List<Post> {
-        return postRepository.findByAccountAccountId(accountId)
+        return postRepository.findByAccountId(accountId = accountId)
     }
 
     fun updatePost(postId: Long, updatedPost: Post): Post? {

@@ -1,4 +1,4 @@
-package com.aday2dream.aday2dream.model
+package com.aday2dream.aday2dream.entity
 
 import jakarta.persistence.*
 import java.math.BigDecimal
@@ -14,11 +14,11 @@ data class Post(
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
-    val account: Account, // Replace with your Account entity
+    val account: Account,
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "audiofile_id", nullable = false)
-    val audiofile: AudioFile, // Replace with your Audiofile entity
+    val audiofile: AudioFile,
 
     @Column(name = "post_title", nullable = false)
     val title: String,

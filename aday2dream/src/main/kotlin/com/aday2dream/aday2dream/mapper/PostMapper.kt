@@ -1,9 +1,9 @@
 package com.aday2dream.aday2dream.mapper
 
 import com.aday2dream.aday2dream.dto.PostDto
-import com.aday2dream.aday2dream.model.Account
-import com.aday2dream.aday2dream.model.AudioFile
-import com.aday2dream.aday2dream.model.Post
+import com.aday2dream.aday2dream.entity.Account
+import com.aday2dream.aday2dream.entity.AudioFile
+import com.aday2dream.aday2dream.entity.Post
 
 
 class PostMapper(){
