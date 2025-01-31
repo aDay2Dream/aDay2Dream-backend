@@ -1,9 +1,8 @@
 package com.aday2dream.aday2dream.dto
 
-data class AudioFileDTO(
+data class AudioFileDto(
     val audiofileId: Long,
-    val title: String,
     val uri: String,
+    val title: String,
     val duration: Int,
-    val uploadedAt: String
 )

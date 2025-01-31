@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/aDay2Dream-backend.iml" filepath="$PROJECT_DIR$/.idea/aDay2Dream-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/aday2dream.main.iml" filepath="$PROJECT_DIR$/.idea/modules/aday2dream.main.iml" />
     </modules>
   </component>
 </project>
