@@ -34,6 +34,8 @@ dependencies {
 	implementation('org.jetbrains.kotlin:kotlin-reflect')
 	implementation('org.postgresql:postgresql')
 	implementation('org.projectlombok:lombok')
+	annotationProcessor("org.projectlombok:lombok")
+
 	implementation('org.springframework.boot:spring-boot-devtools')
 	implementation('org.springframework.boot:spring-boot-starter-test')
 	implementation('org.jetbrains.kotlin:kotlin-test-junit5')
@@ -53,7 +55,6 @@ dependencies {
 	kapt("org.mapstruct:mapstruct-processor:1.6.3")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.apache.commons:commons-compress:1.21")
-
 	implementation("org.slf4j:slf4j-api:2.0.9")
 	implementation("ch.qos.logback:logback-classic:1.4.11")
 }

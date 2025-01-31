@@ -1,6 +1,7 @@
 package com.aday2dream.aday2dream.service
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
@@ -20,14 +21,14 @@ class EmailService(private val mailSender: JavaMailSender) {
         val mimeMessage = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true)
 
-        helper.setFrom("your_email@gmail.com")
+        helper.setFrom("aday2dreamapp@gmail.com")
         helper.setTo(to)
         helper.setSubject(subject)
         helper.setText(text)
 
         val zippedFile = createZippedFile(audioFilePath)
 
-        helper.addAttachment("audio.zip", zippedFile)
+        helper.addAttachment("audio.zip", ByteArrayResource(zippedFile), "application/zip")
 
         mailSender.send(mimeMessage)
     }

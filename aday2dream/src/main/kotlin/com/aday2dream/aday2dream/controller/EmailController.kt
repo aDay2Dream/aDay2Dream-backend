@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.file.Files
 
 @RestController
@@ -20,17 +21,28 @@ class EmailController(private val emailService: EmailService) {
     ): ResponseEntity<String> {
 
         val tempFile = File.createTempFile("audio", ".mp3")
+
         audioFile.inputStream.use { input ->
-            Files.copy(input, tempFile.toPath())
+            FileOutputStream(tempFile).use { output ->
+                input.copyTo(output)  // Ensures file is written completely
+            }
         }
 
-        return try {
+        if (!tempFile.exists() || tempFile.length() == 0L) {
+            return ResponseEntity.status(500).body("Failed to create temp file")
+        }
+
+
+        try {
             emailService.sendEmailWithAttachment(to, subject, text, tempFile.absolutePath)
+            println("File deleted")
             tempFile.delete()
-            ResponseEntity.ok("Email sent successfully!")
+            return ResponseEntity.ok("Email sent successfully!")
         } catch (e: Exception) {
+            println("File deleted")
+            println(e)
             tempFile.delete()
-            ResponseEntity.status(500).body("Failed to send email: ${e.message}")
+            return ResponseEntity.status(500).body("Failed to send email: ${e.message}")
         }
     }
 }
