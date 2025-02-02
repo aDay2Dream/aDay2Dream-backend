@@ -1,6 +1,6 @@
 package com.aday2dream.aday2dream.controller
 
-import com.aday2dream.aday2dream.entity.Post
+import com.aday2dream.aday2dream.dto.PostDto
 import com.aday2dream.aday2dream.service.PostService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import jakarta.validation.Valid
 
-
 @RestController
 @RequestMapping("/posts")
 @Validated
@@ -17,21 +16,20 @@ class PostController(
     private val postService: PostService
 ) {
     @PostMapping
-    fun createPost(@Valid @RequestBody post: Post): ResponseEntity<Post> {
-        val createdPost = postService.createPost(post)
+    fun createPost(@Valid @RequestBody postDto: PostDto): ResponseEntity<PostDto> {
+        val createdPost = postService.createPost(postDto)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost)
     }
 
     @GetMapping("/{id}")
-    fun getPostById(@PathVariable id: Long): ResponseEntity<Post> {
+    fun getPostById(@PathVariable id: Long): ResponseEntity<PostDto> {
         val post = postService.getPostById(id)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(null)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok(post)
     }
 
     @GetMapping
-    fun getAllPosts(): ResponseEntity<List<Post>> {
+    fun getAllPosts(): ResponseEntity<List<PostDto>> {
         val posts = postService.getAllPosts()
         return if (posts.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -41,7 +39,7 @@ class PostController(
     }
 
     @GetMapping("/publisher/{publisherId}")
-    fun getPostsByPublisher(@PathVariable publisherId: Long): ResponseEntity<List<Post>> {
+    fun getPostsByPublisher(@PathVariable publisherId: Long): ResponseEntity<List<PostDto>> {
         val posts = postService.getPostsByPublisherId(publisherId)
         return if (posts.isEmpty()) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
@@ -53,11 +51,10 @@ class PostController(
     @PutMapping("/{id}")
     fun updatePost(
         @PathVariable id: Long,
-        @Valid @RequestBody updatedPost: Post
-    ): ResponseEntity<Post> {
-        val post = postService.updatePost(id, updatedPost)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(null)
+        @Valid @RequestBody updatedPostDto: PostDto
+    ): ResponseEntity<PostDto> {
+        val post = postService.updatePost(id, updatedPostDto)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok(post)
     }
 
