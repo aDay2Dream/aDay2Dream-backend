@@ -65,7 +65,8 @@ class AccountService(
             throw IllegalArgumentException("Email already exists")
         }
 
-        account = accountMapper.toEntity(accountDto)
+        account = accountMapper.toRegisterEntity(accountDto)
+        println(account)
         account.password = hashedPassword
         return accountRepository.save(account)
     }
