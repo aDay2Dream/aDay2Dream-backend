@@ -2,6 +2,7 @@ package com.aday2dream.aday2dream.service
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -11,7 +12,9 @@ import java.io.File
 import java.io.FileInputStream
 
 @Service
-class EmailService(private val mailSender: JavaMailSender) {
+class EmailService(private val mailSender: JavaMailSender,
+@Value("\${spring.mail.username}") private val senderEmail: String
+) {
 
     fun sendEmailWithAttachment(
         to: String,
@@ -22,7 +25,7 @@ class EmailService(private val mailSender: JavaMailSender) {
         val mimeMessage = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true)
 
-        helper.setFrom("aday2dreamapp@gmail.com")
+        helper.setFrom(senderEmail)
         helper.setTo(to)
         helper.setSubject(subject)
         helper.setText(text)
