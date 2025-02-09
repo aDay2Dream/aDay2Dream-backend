@@ -47,11 +47,14 @@ object JwtService {
                 .parseClaimsJws(token)
                 .body
         } catch (e: SignatureException) {
-            print("Access denied: Invalid signature")
+            println("Access denied: Invalid signature")
+            throw IllegalArgumentException("Invalid token signature", e)  // Throw a proper exception to propagate the error
         } catch (e: ExpiredJwtException) {
-            print("Access denied: Token expired")
-        } as Claims
+            println("Access denied: Token expired")
+            throw IllegalArgumentException("Expired token", e)  // Throw a proper exception
+        }
     }
+
 
     private fun isTokenExpired(token: String): Boolean {
         val claims = getTokenBody(token)

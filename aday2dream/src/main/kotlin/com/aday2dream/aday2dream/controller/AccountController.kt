@@ -65,10 +65,9 @@ class AccountController(@Autowired private val accountService: AccountService,
     fun updateAccount(
         @PathVariable("id") accountId: Long,
         @RequestBody updatedAccount: AccountDto,
-        @RequestParam("password") password: String
     ): ResponseEntity<AccountDto> {
         return try {
-            val user = accountService.updateAccount(accountId, updatedAccount, password)
+            val user = accountService.updateAccount(accountId, updatedAccount)
             ResponseEntity.ok(user)
         } catch(e: Exception){
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problem updating account")

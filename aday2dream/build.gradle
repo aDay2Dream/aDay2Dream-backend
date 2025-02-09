@@ -71,7 +71,6 @@ kapt {
 	}
 }
 
-
 tasks.named('test') {
 	useJUnitPlatform()
 }

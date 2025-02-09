@@ -29,13 +29,12 @@ class AccountService(
         return accountMapper.toDto(account)
     }
 
-    fun updateAccount(accountId: Long, accountDto: AccountDto, rawPassword: String?): AccountDto {
+    fun updateAccount(accountId: Long, accountDto: AccountDto): AccountDto {
 
         val existingAccount = accountRepository.findById(accountId).orElseThrow { RuntimeException("User not found") }
         val updatedAccount = existingAccount.copy(
             username = accountDto.username,
             email = accountDto.email,
-            password = rawPassword?.let { passwordEncoder.encode(it) } ?: existingAccount.password,
             firstName = accountDto.firstName,
             lastName = accountDto.lastName,
             profilePicture = accountDto.profilePicture,
