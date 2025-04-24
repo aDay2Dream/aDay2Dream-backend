@@ -122,7 +122,7 @@ class AccountController(@Autowired private val accountService: AccountService,
             }
             return ResponseEntity.ok("Logged out successfully.")
         } catch(e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to log out")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to log out.")
         }
     }
 }
