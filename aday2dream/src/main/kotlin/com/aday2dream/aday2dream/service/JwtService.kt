@@ -1,11 +1,14 @@
 package com.aday2dream.aday2dream.service
 
+import com.aday2dream.aday2dream.controller.AccountController
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import java.security.Key
@@ -14,6 +17,8 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 
 object JwtService {
+    private val logger: Logger = LoggerFactory.getLogger(AccountController::class.java)
+
 
     private var SECRET_KEY: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
@@ -21,6 +26,7 @@ object JwtService {
     private val minutes: Long = 60
 
     fun generateToken(email: String): String {
+        logger.info("Generating token from email...")
         val now = Instant.now()
         return Jwts.builder()
             .setSubject(email)
@@ -31,6 +37,7 @@ object JwtService {
     }
 
     fun extractUsername(token: String): String {
+        logger.info("Extracting username from token...")
         return getTokenBody(token).subject
     }
 
@@ -57,7 +64,9 @@ object JwtService {
 
 
     private fun isTokenExpired(token: String): Boolean {
+        logger.info("Checking whether token has expired...")
         val claims = getTokenBody(token)
+        logger.info("Token: $token")
         return claims.expiration.before(Date())
     }
 }

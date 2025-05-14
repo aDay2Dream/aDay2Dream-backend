@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import jakarta.validation.Valid
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @RestController
 @RequestMapping("/posts")
@@ -15,9 +17,14 @@ import jakarta.validation.Valid
 class PostController(
     private val postService: PostService
 ) {
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(AccountController::class.java)
+    }
+
     @PostMapping
     fun createPost(@Valid @RequestBody postDto: PostDto): ResponseEntity<PostDto> {
         val createdPost = postService.createPost(postDto)
+        logger.info("Post created successfully.")
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost)
     }
 
@@ -25,6 +32,7 @@ class PostController(
     fun getPostById(@PathVariable id: Long): ResponseEntity<PostDto> {
         val post = postService.getPostById(id)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+
         return ResponseEntity.ok(post)
     }
 
@@ -32,8 +40,10 @@ class PostController(
     fun getAllPosts(): ResponseEntity<List<PostDto>> {
         val posts = postService.getAllPosts()
         return if (posts.isEmpty()) {
+            logger.warn("There are no posts.")
             ResponseEntity.noContent().build()
         } else {
+            logger.info("Posts retrieved.")
             ResponseEntity.ok(posts)
         }
     }
@@ -42,8 +52,10 @@ class PostController(
     fun getPostsByPublisher(@PathVariable publisherId: Long): ResponseEntity<List<PostDto>> {
         val posts = postService.getPostsByPublisherId(publisherId)
         return if (posts.isEmpty()) {
+            logger.warn("There are no posts made by the publisher.")
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         } else {
+            logger.info("Posts by publisher retrieved.")
             ResponseEntity.ok(posts)
         }
     }
@@ -61,6 +73,7 @@ class PostController(
     @DeleteMapping("/{id}")
     fun deletePost(@PathVariable id: Long): ResponseEntity<Map<String, String>> {
         postService.deletePostById(id)
+        logger.info("Post with ID $id was deleted successfully.")
         return ResponseEntity.ok(mapOf("message" to "Post with ID $id was deleted successfully."))
     }
 }

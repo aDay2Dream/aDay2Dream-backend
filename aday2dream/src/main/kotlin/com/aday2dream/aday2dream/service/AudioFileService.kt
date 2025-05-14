@@ -1,9 +1,12 @@
 package com.aday2dream.aday2dream.service
 
+import com.aday2dream.aday2dream.controller.AccountController
 import com.aday2dream.aday2dream.dto.AudioFileDto
 import com.aday2dream.aday2dream.entity.AudioFile
 import com.aday2dream.aday2dream.mapper.AudioFileMapper
 import com.aday2dream.aday2dream.repository.AudioFileRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -18,6 +21,11 @@ class AudioFileService(
     private val audioFileMapper: AudioFileMapper,
     @Value("\${audiofile.storage.directory}")private val uploadDir: String
 ) {
+
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(AccountController::class.java)
+    }
+
     private val storageDirectory: Path = Paths.get(uploadDir)
 
     init {
@@ -48,8 +56,10 @@ class AudioFileService(
         val audioFile = getAudioFileById(id)
         val filePath = Paths.get(audioFile.uri)
         if (filePath.exists()) {
+            logger.info("File path exists, deleting...")
             Files.delete(filePath)
         }
+        logger.info("Deleting by id: $id")
         audioFileRepository.deleteById(id)
     }
 
