@@ -82,7 +82,7 @@ class PromptService(
                 promptTitle = updatedPromptDto.promptTitle,
                 promptDescription = updatedPromptDto.promptDescription,
                 promptLinks = updatedPromptDto.promptLinks,
-                startDate = updatedPromptDto.startDate ?: LocalDateTime.now(),
+                startDate = updatedPromptDto.startDate,
                 endDate = updatedPromptDto.endDate,
                 updatedAt = LocalDateTime.now()
             )

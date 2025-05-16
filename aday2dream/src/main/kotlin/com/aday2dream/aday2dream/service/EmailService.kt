@@ -45,7 +45,7 @@ class EmailService(private val mailSender: JavaMailSender,
         logger.info("Email sent.")
     }
 
-    private fun createZippedFile(audioFilePath: String): ByteArray {
+    fun createZippedFile(audioFilePath: String): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
         ZipArchiveOutputStream(byteArrayOutputStream).use { zipOut ->
             val audioFile = File(audioFilePath)

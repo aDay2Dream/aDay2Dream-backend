@@ -14,7 +14,7 @@ data class Post(
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
-    val account: Account,
+    val account: Account?,
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "audiofile_id", nullable = false)
