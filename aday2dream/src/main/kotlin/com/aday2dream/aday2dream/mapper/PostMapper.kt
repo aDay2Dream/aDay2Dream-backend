@@ -7,7 +7,6 @@ import com.aday2dream.aday2dream.entity.Post
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
-import java.util.Optional
 
 @Mapper(componentModel = "spring")
 abstract class PostMapper {

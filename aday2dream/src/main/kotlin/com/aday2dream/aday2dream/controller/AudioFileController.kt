@@ -44,7 +44,7 @@ class AudioFileController(
     fun getAudioFileById(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
             val audioFile = audioFileService.getAudioFileById(id)
-            logger.error("File retrieved.")
+            logger.info("File retrieved.")
             ResponseEntity.ok(audioFile)
         } catch (ex: FileNotFoundException) {
             logger.error("File not found: ${ex.message}")
